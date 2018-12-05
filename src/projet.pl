@@ -104,29 +104,186 @@ create_nbstations:-
 	longueur(LISTE, NBARRETS),
 	assert(nb_stations(t4, NBARRETS)).
 
+ 
+
 /* nom_d1(LISTE, D1) est un prédicat permettant de retourner le nom de la première direction */
 nom_d1(NOMLIGNE, D1):-
-	ligne(NOMLIGNE, _, _, D1).
-
-/* position_stations_d1(NOMSTATION, LISTE, POSITION) est un prédicat permettant de retourner la position d'une station sur une ligne */
-position_stations_d1(NOMSTATION, [NOMSTATION|_], 1).
-position_stations_d1(NOMSTATION,[_|LISTE], POSITION):-
-	position_stations_d1(NOMSTATION,LISTE, NEWPOSITION), POSITION is NEWPOSITION+1. 
+	ligne(NOMLIGNE,_,_,D1,_).
 
 /* nom_d2(LISTE, D2) est un prédicat permettant de retourner le nom de la deuxième direction */
 nom_d2(NOMLIGNE, D2):-
 	ligne(NOMLIGNE, _, _, _, D2).
 
-/* position_stations_d2(NOMSTATION, LISTE, POSITION) est un prédicat permettant de retourner la position d'une stations sur une direction d2 */
+/* position_stations(NOMSTATION, LISTE, POSITION) est un prédicat permettant de retourner la position d'une station sur une ligne */
+position_stations(NOMSTATION, [NOMSTATION|_], 1).
+position_stations(NOMSTATION,[_|LISTE], POSITION):-
+	position_stations(NOMSTATION,LISTE, NEWPOSITION), POSITION is NEWPOSITION+1. 
 
-
+/* create_ligne_numstations() */
+create_ligne_numstations(_, [], _, _, _, _).
+create_ligne_numstations(NOMLIGNE,[NOMSTATION|NEXT], LISTE, RLISTE, D1, D2):-
+	position_stations(NOMSTATION, LISTE, POSITIOND1),
+	position_stations(NOMSTATION, RLISTE, POSITIOND2),
+	assert(num_stations(NOMSTATION, D1, POSITIOND1, D2, POSITIOND2)),
+	create_ligne_numstations(NOMLIGNE,NEXT,LISTE, RLISTE, D1, D2).
 
 /* create_numstations(N, NA) est un prédicat permettant d'associer chaque station de la ligne avec son Nom, son numéro dans chacune des directions */
-/*create_numstations(NOMLIGNE,NOMSTATION, NBARRETS):- */
-/*	listeArrests(NOMLIGNE, LISTE), */
-/*	nom_d1(NOMLIGNE,D1), */
-/*	position_stations_d1(NOMSTATION,LISTE, POSITIOND1), */
-/*	nom_d2(NOMLIGNE,D2), */
-/*	position_stations_d2(NOMSTATION, LISTE, POSITIOND2),*/
-/*	assert(num_stations(NOMSTATION, D1, POSITIOND1, D2, POSITIOND2)).*/
+create_numstations:-
+	
+	/* Création de num_stations pour la liste des stations de métro */
+	listeArrests(m1, LISTE),
+	nom_d1(m1,D1),
+	nom_d2(m1,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m1, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m2, LISTE),
+	nom_d1(m2,D1),
+	nom_d2(m2,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m2, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m3, LISTE),
+	nom_d1(m3,D1),
+	nom_d2(m3,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m3, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m4, LISTE),
+	nom_d1(m4,D1),
+	nom_d2(m4,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m4, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m5, LISTE),
+	nom_d1(m5,D1),
+	nom_d2(m5,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m5, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m6, LISTE),
+	nom_d1(m6,D1),
+	nom_d2(m6,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m6, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m7, LISTE),
+	nom_d1(m7,D1),
+	nom_d2(m7,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m7, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m7inter1, LISTE),
+	nom_d1(m7inter1,D1),
+	nom_d2(m7inter1,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m7inter1, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m7inter2, LISTE),
+	nom_d1(m7inter2,D1),
+	nom_d2(m7inter2,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m7inter2, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m7bis, LISTE),
+	nom_d1(m7bis,D1),
+	nom_d2(m7bis,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m7bis, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m8, LISTE),
+	nom_d1(m8,D1),
+	nom_d2(m8,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m8, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m9, LISTE),
+	nom_d1(m9,D1),
+	nom_d2(m9,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m9, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m10, LISTE),
+	nom_d1(m10,D1),
+	nom_d2(m10,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m10, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m10, LISTE),
+	nom_d1(m10,D1),
+	nom_d2(m10,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m10, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m11, LISTE),
+	nom_d1(m11,D1),
+	nom_d2(m11,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m11, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m12, LISTE),
+	nom_d1(m12,D1),
+	nom_d2(m12,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m12, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m13, LISTE),
+	nom_d1(m13,D1),
+	nom_d2(m13,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m13, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m13inter1, LISTE),
+	nom_d1(m13inter1,D1),
+	nom_d2(m13inter1,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m13inter1, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m13inter2, LISTE),
+	nom_d1(m13inter2,D1),
+	nom_d2(m13inter2,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m13inter2, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(m14, LISTE),
+	nom_d1(m14,D1),
+	nom_d2(m14,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(m14, LISTE, LISTE, RLIST, D1, D2),
 
+	/* Création de num_stations pour la liste des stations de RER */
+
+	listeArrests(rerA, LISTE),
+	nom_d1(rerA,D1),
+	nom_d2(rerA,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(rerA, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(rerB, LISTE),
+	nom_d1(rerB,D1),
+	nom_d2(rerB,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(rerB, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(rerC, LISTE),
+	nom_d1(rerC,D1),
+	nom_d2(rerC,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(rerC, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(rerC1, LISTE),
+	nom_d1(rerC1,D1),
+	nom_d2(rerC1,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(rerC1, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(rerD, LISTE),
+	nom_d1(rerD,D1),
+	nom_d2(rerD,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(rerD, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(rerE, LISTE),
+	nom_d1(rerE,D1),
+	nom_d2(rerE,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(rerE, LISTE, LISTE, RLIST, D1, D2),
+
+	/* Création de num_stations pour la liste des stations de tramway */
+
+	listeArrests(t1, LISTE),
+	nom_d1(t1,D1),
+	nom_d2(t1,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(t1, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(t2, LISTE),
+	nom_d1(t2,D1),
+	nom_d2(t2,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(t2, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(t3, LISTE),
+	nom_d1(t3,D1),
+	nom_d2(t3,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(t3, LISTE, LISTE, RLIST, D1, D2),
+	listeArrests(t4, LISTE),
+	nom_d1(t4,D1),
+	nom_d2(t4,D2),
+	reverse(LISTE, RLIST),
+	create_ligne_numstations(t4, LISTE, LISTE, RLIST, D1, D2).
