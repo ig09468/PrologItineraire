@@ -80,17 +80,17 @@ dessert(NOMLIGNE, DEPART, ARRIVE):-
     isStationOF(R1, ARRIVE, R2).
 
 /*                  QUESTION 7 : en cours                 */
-copie([ARRIVE|L], ARRIVE,[]):- !.
-copie([ARRIVE|L], ARRIVE, _):-!.
-copie([X|L],ARRIVE,[X|L2]):- !,
+copieSansArrive([ARRIVE|L], ARRIVE,[]):- !.
+copieSansArrive([ARRIVE|L], ARRIVE, _):-!.
+copieSansArrive([X|L],ARRIVE,[X|L2]):- !,
     X \= ARRIVE, 
-    copie(L,ARRIVE,L2).
-    
+    copieSansArrive(L,ARRIVE,L2).
+
 
 calcul([DEPART], DEPART, ARRIVE, []):-!.
 calcul([DEPART|LISTARRETS], DEPART,ARRIVE, LL):- !,
     append([],LISTARRETS, L),
-    copie(L,ARRIVE, LL).
+    copieSansArrive(L,ARRIVE, LL).
 calcul([SATION|LISTARRETS], DEPART,ARRIVE, LL):-
     calcul(LISTARRETS, DEPART, ARRIVE, LL).
 
@@ -101,4 +101,23 @@ nbarrets(NOMLIGNE, DEPART, ARRIVE, DIR, NBARRETS):-
     calcul(LISTARRETS,DEPART,ARRIVE, L),
     longueur(L, NBARRETS).
 
+isDirection(NOMLIGNE, DIR):-
+    ligne(NOMLIGNE,_,_,DIR,_),!.
+isDirection(NOMLIGNE,DIR):-
+    ligne(NOMLIGNE,_,_,_,DIR).
+
+listeArretsDirigee(NOMLIGNE,DIR, LISTARRETS):-
+    ligne(NOMLIGNE,_,_,DIR,_),!,
+    listeArrets(NOMLIGNE, LISTARRETS),!.
+
+listeArretsDirigee(NOMLIGNE,DIR, LISTARRETS):-
+    listeArrets(NOMLIGNE, L),
+    reverse(L, LISTARRETS).
+
+nbarrets2(NOMLIGNE, DEPART, ARRIVE, DIR, NBARRETS):-!,
+    isDirection(NOMLIGNE,DIR),
+    dessert(NOMLIGNE, DEPART, ARRIVE), 
+    listeArretsDirigee(NOMLIGNE, LISTARRETS),
+    calcul(LISTARRETS,DEPART,ARRIVE, L),
+    longueur(L, NBARRETS).
 /*                  QUESTION 8: en cours                   */
