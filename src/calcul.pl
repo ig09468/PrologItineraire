@@ -1,36 +1,85 @@
-/* station(Station, LLignes) qui retourne vrai si la liste LLignes contient toutes les lignes passant par la Station */
-station(STATION, LLIGNES):-
-	num_station(STATION, LLIGNES, _,_,_,_).
 
-/* compare_ligne(LLIGNE1, LLIGNE2, LSTATIONS) compare la liste des stations des deux lignes et retourne la liste */
-compare_ligne([],[],_).
-compare_ligne([STATION|NEXT],[STATION|NEXT2], [STATION|LSTATIONS]):-
-	compare_ligne(NEXT,NEXT2,LSTATIONS).
-compare_ligne([STATION1|NEXT],[STATION2|NEXT2],LSTATIONS):-
-	compare_ligne(NEXT,NEXT2,LSTATIONS).
-	
+/*                           QUESTION 3                  */
+/*chercherLigne(STATION, NOMLIGNE est un predication permet de verifier si la ligne NOMLIGNE passe par la station STATION*/
+chercherLigne(STATION, NOMLIGNE):-
+    ligne(NOMLIGNE,_,_, _, _),
+    listeArrets(NOMLIGNE, LISTARRETS),
+    member(STATION, LISTARRETS).
 
 
-/* intersection(LIGNE1, LIGNE2, LSTATIONS) retourne vrai si LSTATIONS contient toutes les stations où LIGNE1 et LIGNE2 se croisent */
-intersection(LIGNE1,LIGNE2, LSTATIONS):-
-	listArrets(LIGNE1, LISTE1),
-	listArrets(LIGNE2, LISTE2),
-	compare_ligne(LISTE1,LISTE2,LSTATIONS).
-
-
-/* correspondance(Ligne, LLIGNESSTATIONS) qui retourne vrai si la liste des stations contient toutes les correspondances possible sur la ligne */
+station(STATION, LLIGNE):-
+    setof(NOMLIGNE, chercherLigne(STATION, NOMLIGNE), LLIGNE).
 
 
 
+/*                          QUESTION 4                  */
+/*croise est un prédicat qui retourne vrai si STATION existe à la fois dans LISTA1 et LISTA2*/
+croise(LISTA1, LISTA2, STATION):-
+    member(STATION, LISTA1),
+    member(STATION, LISTA2).
 
-/* dessert(LIGNE, DEPART, ARRIVEE) qui retourne vrai si la ligne dessert les arrêts DEPART et ARRIVEE */
+/*le prédication serach retourne à chaque fois toutes les stations ou peuvent se croiser NOMLIGNE1 et NOMLIGNE2 */
+search(NOMLIGNE1, NOMLIGNE2,STAION):-
+    listeArrets(NOMLIGNE1, LISTA1),
+    listeArrets(NOMLIGNE2, LISTA2),
+    croise(LISTA1, LISTA2, STAION).
+
+/*le rédicat intersection retourne la liste de toutes les station ou peuvent se croiser NOMLIGNE1, NOMLIGNE2*/
+intersection(NOMLIGNE1, NOMLIGNE2, L):-
+    setof(STAION, search(NOMLIGNE1, NOMLIGNE2, STAION), L),
+    NOMLIGNE1 \= NOMLIGNE2.
 
 
 
+/*                      QUESTION 5                  */
+/*ligne_station est prédication qui permet de retourner une liste L contenant les paires [NOMLIGNE, STATION]*/
+ligne_station(NOMLIGNE, [], []):- !.
+ligne_station(NOMLIGNE, [ST|LSTATIONS],[[NOMLIGNE,ST] |L]):-
+    ligne_station(NOMLIGNE, LSTATIONS, L).
 
-/* nbarret(LIGNE, DEPART, ARRIVEE, DIR, NBARRET) qui calcul dans la variable NBARRET le nombre d'arrêt entre la station DEPART ET ARRIVEE */
 
-nbarret(LIGNE, DEPART, ARRIVEE, DIR, NBARRET):-
-	num_station(DEPART,LIGNE, DIR, NBDIR,_,_),
-	num_station(ARRIVEE,LIGNE,DIR, NBDIR2,_,_),
-	NBARRET is NBDIR-NBDIR2.
+/*changemet_ligne permet pour chaque ligne NOMLIGNE2 de retourner la liste de correspondance pouvant être effectuées à partir de NOMLIGNE1*/
+changement_ligne(NOMLIGNE1, NOMLIGNE2, LISTCORRESPONDANCE):-
+    intersection(NOMLIGNE1, NOMLIGNE2, LL),
+    ligne_station(NOMLIGNE2, LL, LISTCORRESPONDANCE).
+
+
+/*list_changement est un prédicat auxiliaire pour éviter de mettre des variable libres lors de l'appel de setof dans le prédicat correspondance*/
+list_changement(LIGNE, L):-
+    changement_ligne(LIGNE, LIGNE2, L).
+
+
+/*correspondance(LIGNE, */
+correspondance(LIGNE, LISTCORRESPONDANCE):-
+    setof(L, list_changement(LIGNE, L), LISTCORRESPONDANCE).
+
+
+
+/*                      QUESTION 6                  */
+
+isStationOF([STATION], STATION, []):- !.
+isStationOF([STATION|LISTARRETS], STATION, LISTARRETS):-!.
+isStationOF([_|LISTARRETS], STATION, REST):-
+    isStationOF(LISTARRETS, STATION, REST).
+
+/*dessert(NOMLIGNE, DEPART, ARRIVE) est prédicat qui retourne vrai si la ligne NOMLIGNE dessert les station DEPART et ARRIVE*/
+
+/*dessert dans la direction 1*/
+dessert(NOMLIGNE, DEPART, ARRIVE):-
+    listeArrets(NOMLIGNE, LISTARRETS),
+    isStationOF(LISTARRETS, DEPART, RESTOFSTATIONS), !.
+/*après avoir testé que DEPART est une station de la liste des arrets de NOMLIGNE, on test si ARRIVE exite encore dans la reste des station 
+pour s'assurer que ARRIVE est toujours après DEPART*/
+    isStationOF(RESTOFSTATIONS, ARRIVE, RESTOFSTATIONS2). 
+
+/*dessert pour la direction 2*/
+dessert(NOMLIGNE, DEPART, ARRIVE):-
+    listeArrets(NOMLIGNE, LISTARRETS),
+    reverse(LISTARRETS, INVLISTARRETS),
+    isStationOF(INVLISTARRETS, DEPART, R1),
+    isStationOF(R1, ARRIVE, R2).
+
+/*                  QUESTION 7 : en cours                 */
+
+
+/*                  QUESTION 8: en cours                   */
