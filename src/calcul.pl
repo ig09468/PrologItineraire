@@ -80,6 +80,25 @@ dessert(NOMLIGNE, DEPART, ARRIVE):-
     isStationOF(R1, ARRIVE, R2).
 
 /*                  QUESTION 7 : en cours                 */
+copie([ARRIVE|L], ARRIVE,[]):- !.
+copie([ARRIVE|L], ARRIVE, _):-!.
+copie([X|L],ARRIVE,[X|L2]):- !,
+    X \= ARRIVE, 
+    copie(L,ARRIVE,L2).
+    
 
+calcul([DEPART], DEPART, ARRIVE, []):-!.
+calcul([DEPART|LISTARRETS], DEPART,ARRIVE, LL):- !,
+    append([],LISTARRETS, L),
+    copie(L,ARRIVE, LL).
+calcul([SATION|LISTARRETS], DEPART,ARRIVE, LL):-
+    calcul(LISTARRETS, DEPART, ARRIVE, LL).
+
+
+nbarrets(NOMLIGNE, DEPART, ARRIVE, DIR, NBARRETS):-
+    dessert(NOMLIGNE, DEPART, ARRIVE), !,
+    listeArrets(NOMLIGNE, LISTARRETS),
+    calcul(LISTARRETS,DEPART,ARRIVE, L),
+    longueur(L, NBARRETS).
 
 /*                  QUESTION 8: en cours                   */
