@@ -1,22 +1,20 @@
-/* Représentation du réseau de transport */
-
-
-/* longueur(L,T) est un prédicat permettant de retourner la longueur d'une liste */ 
+/*Question 1*/
+/* longueur est un prédicat qui permet de calcuelr la longueur d'une liste*/
 longueur([],0).
 longueur([_|LISTE], N):-
 	longueur(LISTE, M), N is M+1.
 
 /* listeArrests(L,R) est un prédicat permettant de retourner la liste des arrêts d'une ligne */
-listeArrests([], []).
-listeArrests(NOMLIGNE,LISTE):-
+listeArrets([], []).
+listeArrets(NOMLIGNE,LISTE):-
 	ligne(NOMLIGNE,_,LISTE,_,_).
 
-/* link_nbstations(NOMLIGNE) */
+
+/* link_nbstations(NOMLIGNE) est un predicat qui permet d'associer à chaque ligne son nombre d'arrets */
 link_nbstations(NOMLIGNE):-
-	listeArrests(NOMLIGNE, LISTE),
+	listeArrets(NOMLIGNE, LISTE),
 	longueur(LISTE, NBARRETS),
 	assert(nb_stations(NOMLIGNE, NBARRETS)).
-
 
 /* create_nbstations(L,NA) est un prédicat permettant d'associer une ligne avec son nombre de stations */
 create_nbstations:-
@@ -55,8 +53,9 @@ create_nbstations:-
 	link_nbstations(t2),
 	link_nbstations(t3),
 	link_nbstations(t4).
- 
 
+
+/*Question 2*/
 /* nom_d1(LISTE, D1) est un prédicat permettant de retourner le nom de la première direction */
 nom_d1(NOMLIGNE, D1):-
 	ligne(NOMLIGNE,_,_,D1,_).
@@ -65,10 +64,13 @@ nom_d1(NOMLIGNE, D1):-
 nom_d2(NOMLIGNE, D2):-
 	ligne(NOMLIGNE, _, _, _, D2).
 
+
 /* position_stations(NOMSTATION, LISTE, POSITION) est un prédicat permettant de retourner la position d'une station sur une ligne */
-position_stations(NOMSTATION, [NOMSTATION|_], 1).
+position_stations(NOMSTATION, [NOMSTATION|_], 1):- !.
 position_stations(NOMSTATION,[_|LISTE], POSITION):-
-	position_stations(NOMSTATION,LISTE, NEWPOSITION), POSITION is NEWPOSITION+1. 
+	position_stations(NOMSTATION,LISTE, NEWPOSITION), 
+    POSITION is NEWPOSITION+1. 
+
 
 /* create_ligne_numstations(NOMSTATION, LISTE, LISTE, RLISTE, D1, D2) est un prédicat permettant créer le prédicat num_stations sur toutes les stations d'une ligne */
 create_ligne_numstations(_, [], _, _, _, _).
@@ -77,20 +79,22 @@ create_ligne_numstations(NOMLIGNE,[NOMSTATION|NEXT], LISTE, RLISTE, D1, D2):-
 	position_stations(NOMSTATION, RLISTE, POSITIOND2),
 	assert(num_stations(NOMSTATION, NOMLIGNE, D1, POSITIOND1, D2, POSITIOND2)),
 	create_ligne_numstations(NOMLIGNE,NEXT,LISTE, RLISTE, D1, D2).
+ 
 
 /* link_numstations(NOMLIGNE) */
 link_numstations(NOMLIGNE):-
-	listeArrests(NOMLIGNE, LISTE),
+	listeArrets(NOMLIGNE, LISTE),
 	nom_d1(NOMLIGNE,D1),
 	nom_d2(NOMLIGNE,D2),
 	reverse(LISTE, RLISTE),
-	create_ligne_numstations(NOMLIGNE, LISTE, LISTE, RLISTE, D1, D2).
+	create_ligne_numstations(NOMLIGNE, LISTE, LISTE, RLISTE, D1, D2),
+	create_ligne_numstations(NOMLIGNE, LISTE, LISTE, RLISTE, D2, D1).
 
 
 /* create_numstations(N, NA) est un prédicat permettant d'associer chaque station de la ligne avec son Nom, son numéro dans chacune des directions */
 create_numstations:-
 	
-	/* Création de num_stations pour la liste des stations de métro */
+/*Création de num_stations pour la liste des stations de metro*/
 	link_numstations(m1),
 	link_numstations(m2),
 	link_numstations(m3),
@@ -111,7 +115,7 @@ create_numstations:-
 	link_numstations(m13inter2),
 	link_numstations(m14),
 	
-	/* Création de num_stations pour la liste des stations de RER */
+/* Création de num_stations pour la liste des stations de RER */
 	link_numstations(rerA),
 	link_numstations(rerB),
 	link_numstations(rerC1),
@@ -119,15 +123,9 @@ create_numstations:-
 	link_numstations(rerD),
 	link_numstations(rerE),
 	
-	/* Création de num_stations pour la liste des stations de tramway */
+/* Création de num_stations pour la liste des stations de tramway */
 	link_numstations(t1),
 	link_numstations(t2),
 	link_numstations(t3),
 	link_numstations(t4).
-
-
-/* station(Station, LLignes) qui retourne vrai si la liste LLignes contient toutes les lignes passant par la Station */
-station(_,[]).
-station(STATION, [X|QLLIGNES]):-
-	num_station(STATION, X, _,_,_,_),
-	station(STATION, QLLIGNES).
+    
