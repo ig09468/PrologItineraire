@@ -1,5 +1,4 @@
 
-/*                           QUESTION 3                  */
 /*chercherLigne(STATION, NOMLIGNE est un predication permet de verifier si la ligne NOMLIGNE passe par la station STATION*/
 chercherLigne(STATION, NOMLIGNE):-
     ligne(NOMLIGNE,_,_, _, _),
@@ -31,29 +30,21 @@ intersection(NOMLIGNE1, NOMLIGNE2, L):-
 
 
 
-/*                      QUESTION 5                  */
-/*ligne_station est prédication qui permet de retourner une liste L contenant les paires [NOMLIGNE, STATION]*/
-ligne_station(NOMLIGNE, [], []):- !.
-ligne_station(NOMLIGNE, [ST|LSTATIONS],[[NOMLIGNE,ST] |L]):-
-    ligne_station(NOMLIGNE, LSTATIONS, L).
+/*Question 5 version 2*/
+
+ligne_stations(NOMLIGNE1, LIGNEDECHANGEMENT, [LIGNEDECHANGEMENT|STATION]):-
+    intersection(NOMLIGNE1, LIGNEDECHANGEMENT, LISTSTATIONS),
+    member(STATION, LISTSTATIONS).
 
 
-/*changemet_ligne permet pour chaque ligne NOMLIGNE2 de retourner la liste de correspondance pouvant être effectuées à partir de NOMLIGNE1*/
-changement_ligne(NOMLIGNE1, NOMLIGNE2, LISTCORRESPONDANCE):-
-    intersection(NOMLIGNE1, NOMLIGNE2, LL),
-    ligne_station(NOMLIGNE2, LL, LISTCORRESPONDANCE).
+
+correspondances_possibles(NOMLIGNE1, L):-
+    ligne_stations(NOMLIGNE1, NOMLIGNE2, L).
 
 
-/*list_changement est un prédicat auxiliaire pour éviter de mettre des variable libres lors de l'appel de setof dans le prédicat correspondance*/
-list_changement(LIGNE, L):-
-    changement_ligne(LIGNE, LIGNE2, L).
-
-
-/*correspondance(LIGNE, */
-correspondance(LIGNE, LISTCORRESPONDANCE):-
-    setof(L, list_changement(LIGNE, L), LISTCORRESPONDANCE).
-
-
+correspondance(NOMLIGNE, LISTCORRESPONDANCE):-
+    setof(L,correspondances_possibles(NOMLIGNE, L), LISTCORRESPONDANCE).  
+    
 
 /*                      QUESTION 6                  */
 
@@ -79,45 +70,56 @@ dessert(NOMLIGNE, DEPART, ARRIVE):-
     isStationOF(INVLISTARRETS, DEPART, R1),
     isStationOF(R1, ARRIVE, R2).
 
-/*                  QUESTION 7 : en cours                 */
-copieSansArrive([ARRIVE|L], ARRIVE,[]):- !.
-copieSansArrive([ARRIVE|L], ARRIVE, _):-!.
-copieSansArrive([X|L],ARRIVE,[X|L2]):- !,
+/*                  QUESTION 7 :                 */
+/*copier_sans_arrive est un predicat appelé par le prédicat liste_des_arrets pour retourner la liste des arrets entre depart et arrivé*/
+copier_sans_arrive([ARRIVE|LISTARRETS], ARRIVE,[]):- !.
+copier_sans_arrive([ARRIVE|LISTARRETS], ARRIVE, _):-!.
+copier_sans_arrive([X|LISTARRETS],ARRIVE,[X|LIST]):- !,
     X \= ARRIVE, 
-    copieSansArrive(L,ARRIVE,L2).
+    copier_sans_arrive(LISTARRETS,ARRIVE,LIST).
 
 
-calcul([DEPART], DEPART, ARRIVE, []):-!.
-calcul([DEPART|LISTARRETS], DEPART,ARRIVE, LL):- !,
-    append([],LISTARRETS, L),
-    copieSansArrive(L,ARRIVE, LL).
-calcul([SATION|LISTARRETS], DEPART,ARRIVE, LL):-
-    calcul(LISTARRETS, DEPART, ARRIVE, LL).
+/*liste_des_arrets retourne la liste des arrets se trouvant entre départ et arrive*/
+liste_des_arrets([DEPART], DEPART, ARRIVE, []):-!.
+liste_des_arrets([DEPART|LARRETS], DEPART,ARRIVE, LISTARRETS):- !,
+    append([],LARRETS, LISTA ),
+    copier_sans_arrive(LISTA,ARRIVE, LISTARRETS).
+liste_des_arrets([SATION|LARRETS], DEPART,ARRIVE, LISTARRETS):-
+    liste_des_arrets(LARRETS, DEPART, ARRIVE, LISTARRETS).
 
-
+/*
 nbarrets(NOMLIGNE, DEPART, ARRIVE, DIR, NBARRETS):-
     dessert(NOMLIGNE, DEPART, ARRIVE), !,
     listeArrets(NOMLIGNE, LISTARRETS),
-    calcul(LISTARRETS,DEPART,ARRIVE, L),
+    liste_des_arrets(LISTARRETS,DEPART,ARRIVE, L),
     longueur(L, NBARRETS).
+*/
 
+/*le prédicat is direction retourne vrai si DIR est une direction de la ligne NOMLIGNE*/
 isDirection(NOMLIGNE, DIR):-
     ligne(NOMLIGNE,_,_,DIR,_),!.
 isDirection(NOMLIGNE,DIR):-
     ligne(NOMLIGNE,_,_,_,DIR).
 
-listeArretsDirigee(NOMLIGNE,DIR, LISTARRETS):-
+
+/*liste_arrets_dirigé retourne la liste de tous les arrets de la ligne NOMLIGNE */
+liste_arrets_dirigee(NOMLIGNE,DIR, LISTARRETS):-
     ligne(NOMLIGNE,_,_,DIR,_),!,
     listeArrets(NOMLIGNE, LISTARRETS),!.
-
-listeArretsDirigee(NOMLIGNE,DIR, LISTARRETS):-
+liste_arrets_dirigee(NOMLIGNE,DIR, LISTARRETS):- 
+/*sinon c'est la direction 2, on retourne donc la liste des arrets inversée*/
     listeArrets(NOMLIGNE, L),
     reverse(L, LISTARRETS).
 
-nbarrets2(NOMLIGNE, DEPART, ARRIVE, DIR, NBARRETS):-!,
+/*nbarrets retourne le nomre d'arrets se trouvant entre DEPART et ARRIVE */
+nbarrets(NOMLIGNE, DEPART, ARRIVE, DIR, NBARRETS):-!,
     isDirection(NOMLIGNE,DIR),
     dessert(NOMLIGNE, DEPART, ARRIVE), 
-    listeArretsDirigee(NOMLIGNE, LISTARRETS),
-    calcul(LISTARRETS,DEPART,ARRIVE, L),
+    liste_arrets_dirigee(NOMLIGNE,DIR,  LISTARRETS),
+    liste_des_arrets(LISTARRETS,DEPART,ARRIVE, L),
     longueur(L, NBARRETS).
 /*                  QUESTION 8: en cours                   */
+
+
+
+
