@@ -88,12 +88,6 @@ liste_des_arrets([SATION|LARRETS], DEPART,ARRIVE, LISTARRETS):-
     liste_des_arrets(LARRETS, DEPART, ARRIVE, LISTARRETS).
 
 /*
-nbarrets(NOMLIGNE, DEPART, ARRIVE, DIR, NBARRETS):-
-    dessert(NOMLIGNE, DEPART, ARRIVE), !,
-    listeArrets(NOMLIGNE, LISTARRETS),
-    liste_des_arrets(LISTARRETS,DEPART,ARRIVE, L),
-    longueur(L, NBARRETS).
-*/
 
 /*le prédicat is direction retourne vrai si DIR est une direction de la ligne NOMLIGNE*/
 isDirection(NOMLIGNE, DIR):-
